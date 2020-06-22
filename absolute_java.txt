@@ -1,0 +1,479 @@
+Overloading
+	- Two or more methods in the same class can have the same method name.
+	Rules for overloading:
+		* Two definitions of the method name either must have different numbers
+			of parameters or some parameter position must be of differing types
+			types in the two definitions. 
+
+
+	+ Example:
+		public void setDate(int month, int day, int year);
+		public void setDate(String month, int day, int year);
+		public void setDate(int year)
+	- PITFALL: Overloading and automatic type conversion:
+		+ Example:
+			public void increase(double factor)
+			{
+				year = (int)(year + factor*year);
+			}
+
+			public void increase(int term)
+			{
+				year = int(year + term);
+			}
+
+			=> date.incresese(2) // maybe not what you want
+
+			public void doSth(double n1, int n2)
+			public void doSth(int n1, double n2)
+
+			=> doSth(3,5) => error
+	Note: 	+ Java always looks for a overloading method before it tries to use automatic
+		type conversion.
+		+ Cannot overload based on the type returned.
+		{
+			public int computeSth(int n);
+			public double computeSth(int n);
+		=> illegal
+		}
+		+ Cannot overload operators in Java (+/-)
+	
+Constructors
+	Use overloading to define multiple constructors.
+	+ Example:
+		public class Date{
+			private int year;
+
+			public Date()
+			{
+				year = 1000;
+			}
+			
+
+			public Date(Date aDate)
+			{
+				if(aDate == null)
+				{
+					System.out.println("Fatal error");
+					System.exit(0);
+				}
+				year = aDate.year;
+			}
+
+		}
+		
+		=> Date nowYear = new Date(2090);
+	
+	Default variable initializations
+	Note:  + Local variables are not automatically initialized in Java, so you must
+		initialize a local variable before using it.
+	       + Instance variables are automatically initialized.
+	       + Constructors normally set all instance variables, even if there is not a
+		full set of parameter.
+
+	The StringTokenizer Class
+	TSC is used to recover the words in a multiword string.
+		Example:
+			StringTokenizer wordFactory = new StringTokenizer("Hello World");
+			while (wordFactory.hasMoreTokens())
+			{
+				System.out.println(wordFactory.nextToken());
+			}
+			=> Output:
+				Hello
+				World
+			Similar like split: new StringTokenizer(String, delimit: " \n.,");
+	
+	Compare 2 string: str1.equalsIgnoreCase(str2);
+
+
+Chapter 5: Defining Classes II
+Static methods and static variable
+	Static method: Method that requires no calling object
+	Definition:
+		public static int maximum(int a, int b)
+		{
+			return a>b?a:b;
+		}
+	Invoke a static method:
+		int budget = SomeClass.maximum(yourMoney, myMoney);
+
+	Since static method does not need a calling object, it cannot refers to an instance
+	variable of the class, nor can it invoke a nonstatic method of the class.
+
+	Static variable: variable that belongs to the class as a whole and not just to one object
+	Definition: 
+		private static int turn;
+	Note: 
+		+ Good programming style dictates that static variables should normally be marked
+		private unless they are marked final.
+Math class:
+	Math.round(double/float)
+	Example:
+		Math.round(3.2) => 3
+		Math.round(3.6) => 4
+	Math.ceil(double) : return the smallest whole number greater than or equal to the arg
+	Example:
+		Math.ceil(3.2) => 4
+		Math.ceil(3.9) => 4
+	Math.floor(double): return the largest whole number less than or equal to the arg
+		Math.ceil(3.2) => 3
+		Math.ceil(3.9) => 3
+	Math.random(): 0 <= return < 1.0
+Wrapper Classes:
+	Definition:
+		Integer intObj = new Integer(32);
+	The process of going from a value of primitive type to an object of its wrapper class
+	is sometimes called boxing. To go in the reverse direction, from an object of type Integer
+	to the coressponding int value (unboxing):
+		int i = intObj.intValue();
+	The wrapper classes for primitive types Byte, Short, Long, Float, Double, Character
+	
+	Automatic Boxing and Unboxing
+	The value of the primitive type  <=> private instance variable
+	Automatic boxing:
+		Integer num = 47;
+		Double price = 123.5;
+		Character grade = "A";
+	Automatic unboxing:
+		int numP = num;
+		double priceP = price; 
+	Example:
+		Double price = 19.5;    <=> Double price = new Double(19.5);
+		price = price + 5.2;    <=> price = new Double(price.doubleValue() + 5.2);
+Static Methods in Wrapper Classes.	
+The wrapper classes contain a number of useful constants and static method.
+	- Largest and smallest values:
+		+ Example: Integer.MAX_VALUE and Integer.MIN_VALUE
+	- Parse method:convert back and forth between string representation of numbers
+			and the coressponding number of type int.
+		+ Example:  Double.parseDouble("199.98") => double 199.98;
+			    Double.parseDouble(theString.trim()); // remove leading
+									and trailing whitespace, such as blanks.
+			    Double.toString(123.45) => String "123.45";
+
+	-String method:
+		+ "String".toLowerCase(); => "string";
+		+ "String".charAt(0); => "S";
+		+ "String".substring(1); =>"tring";
+
+
+References and Class Parameters
+Variables and Memory
+	Note: Why Eight Bits:
+		First, 8 is a power of 2. Since computers use bits, which have only two
+		possible values, powers of 2 are more convenient than powers of 10.
+		Second, it turns out that 7 bits are required to code a single character
+		of the ASCII character set. So 8 bits(1 byte) is the smallest power of 2
+		that will hold a single ASCII character.
+	_________
+byte0	|	|
+	---------        variable1( 2byte location with address 0)	
+byte1	|	|
+	---------
+byte2	|	|
+	---------	 variable2(2byte location with address 2)
+byte3	|	|
+	---------
+
+
+References
+A variable of a class type stores only the memory address of where an object is located
+The object named by the variable is stored in some other location in memory, an the variable
+contains only the memory address of where the object is stored.
+
+Class Parameters
+Strictly speaking, all parameters in java are call-by-value.
+
+
+The Constant null
+null like a reference that does not refer to any object. Use '==' to test null object.
+
+The new Operator and Anonymous Objects.
+	+ Example: 
+		if(var1.equals(new ToyClass("Joe", 42)))
+			sys.out("Equal");
+		else sys.out("Not Equal");
+It is called anonymous because the object is not assigned a variable to serve as its name.
+
+Using and Misusing References
+Class Invariant:
+	A statement that is always true for every object of the class is called a class invariant
+	A class invariant can help to define a class in a consistent and organized way.
+
+
+Copy Constructors
+	Definition: is a constructor with a single argument of the same type as the class.
+	Example: 
+		Date date1 = new Date("January", 1, 2015);
+		Date date2 = new Date(date1);
+	A copy constructor should be designed so the object it creates is intuitively an exact
+	copy of its parameter, but a completely independent copy.
+
+Privacy Leaks:
+	Leaking accessor methods:
+		public Date getBirthDay()
+		{
+			return born;	//Date date = citizen.getBirthDay();
+		}			//born.setDate("April", 1, 3000);
+	Leaking mutator methods:
+		public void setBirthDay(Date newDate)
+		{
+			born = newDate;	//Date date = new Date("April", 1, 3000) 
+		}			//citizen.setBirthDay(date);
+	
+Mutable and Immutable Classes
+	Immutable: A class that contains no methods that change any of the data in an object
+		of the class is called an immutable class and objects of the class are called
+		immutable objects. (Ex String)
+	Mutable: A class that contains public mutator methods or other public methods, such as
+		input method, that can change the data in an object of the class is called
+		a mutable class, and objects of the class are called mutable objects.
+	Note: Use should never write  a method that returns a mutable object, but should instead
+		use a copy constructor to return a reference to a completely independent copy
+		of the mutable object.
+	
+Deep Copy versus Shallow Copy
+	return new object => deep copy;
+	return object => shallow copy; 
+
+Packages and javadoc
+Packages and import Statements
+	import statement
+		Syntax: import Package_Name.Class;
+	To make a package, group all the classes together into a single directory and add the package
+	statement to the beginning of each class file:
+		package Package_Name;
+	CLASSPATH: 
+		Example:
+
+	-----libraries
+		|----newlibraries
+			|-----utilities
+				|------numericstuff
+					|-----Aclass.class
+					|-----AnotherClass.class
+
+ 
+			CLASSPATH: libraries/newlibraries
+			package directory:libraries/newlibraries/utilities/numericstuff
+			=> package utilities.numericstuff;
+			=> import utilities.numericstuff.*;
+The default package
+	All the classes in your current directory belong to an unnamed package called the default 
+	package. As long as the current directory is on your CLASSPATH, all the classes in the default
+	package are automatically available to your code.(current directory CLASSPATH .;)
+	CLASSPATH:  .;\libraries\newlibraries;\otherstuff\specialjava
+Specifying a class Path when you compile:
+	command: 
+		+ javac -classpath .;C:/lib/numeric;C:/otherstuff YourClass.java
+		+ java -classpath .;C:/lib/numeric;C:/otherstuff YourClass
+
+
+Name Clash:
+	Two classes have the same name.
+	Solution: Use the fully qualified class names.
+		apack.HighClass obj1 = new apack.HighClass();
+		bpack.HighClass obj2 = new bpack.HighClass();
+
+
+
+Introduction to javadoc
+	- Encapsulation: Seperate the interface of a class ( the instructions on how to use the class) from the
+		implementation ( the detailed code that tells the computer how the class does its work)
+	- Commenting Classes for javadoc.
+		Two condition:
+			+ The comment must immediately precede a public class definition, a public method
+			definition, or other public item.
+			+ The comment must be a block comment(/*  */ comment), and the opening /* must contain 
+			an extra *. So the comment must be marked by /** at the beginning and */ at the end.
+ 		// is not extract
+		@tag the special information about parameters and so forth.
+			Example:
+				/**
+				Tests for equality of two objects of type Person.
+				@param otherPerson The person being compared to the calling object
+				@return Return true if the calling object equals otherPerson
+				*/
+				public boolean equals(Person otherPerson)
+		Some of the @tags
+		@param	para_name para_description
+		@return description_of_value_returned
+		@throws Exception_Type Explaination
+		@deprecated
+		@see package_name.class_name
+		@author Author
+		@version Version_Information
+Running javadoc
+	command: javadoc -d Documentation_Directory Package_Name
+	Example: javadoc -d documentation/mypackages mylibraries.numericstuff
+
+
+Chapter 6: Array
+Declaring and Creating an Array
+	Syntax:
+		Base_Type[] array_name = new Base_Type[Length];
+	Example:
+		char[] line = new char[10];
+		Person[] specimen = new Person[100];
+	Length of array: array.length
+	Initializing arrays:
+		int[] age = {2,12,1};
+	TIP: char array to String:
+		Example: char[] a = {'A', ' ','B','C','D','E'};
+			String s = new String(a);
+			String b = new String(a,2,3);
+
+PITFALL: Arrays with a Class Base Type:
+	Date[] holidayList = new Date[20];
+	Note: It creates 20 indexed variables of type Date. This does not create 20 object of type Date.
+	The index variables are automatically initialized to null.
+	=> Date[] holidayList = new Date[20];
+	   for(int i= 0; i< holidayList.length; i++)
+		holidayList[i] = new Date();
+
+Returning an Array:
+Syntax:
+	public [static] Base_Type[] method_name(para_list)
+	{
+		Base_Type[] temp = new Base_Type[Array_Size];
+		return temp;
+	}
+For-Each loop for arrays:
+	Syntax: 
+		for(Array_Base_Type variable:array_name)
+			statement
+
+Chaper 7: Inheritance
+A sample class hierarchy:
+				    Employee
+			________________|________________
+			|				|
+		HourlyEmployee			SalariedEmployee
+		________|_______		_______|________
+		|		|		|		|
+	     FullTime	     PartTime      TechStaff         Executive
+				________________|_______________		
+				|		|		|
+			    Engineer         Techician       ClericalStaff
+
+	public class Employee{
+		public Employee(){
+			name = "No name";
+			hireDate = new Date("April", 1, 1000);
+		}
+		public Employee(Employee aEmployee){
+			name = aEmployee.name;
+			hireDate = new Date(aEmployee.hireDate);
+		}
+	}
+	public class HourlyEmployee extends Employee{
+		public HourlyEmployee(){
+			super();
+			wageRate = 0;
+		}
+		public HourlyEmployee(HourlyEmployee aHourlyEmployee){
+			super(aHourlyEmployee);
+			wageRate = aHourlyEmployee.wageRate;
+		}
+
+	} 
+
+The derived class ingerits all the public methods, all the public and private instance variable
+, and all the public and private static variables from the base class, and it can add more instance
+variables, more static variables, and more methods.
+
+Overriding a method definition
+If you add the modifier final to the definition of a method, it indicates that the method may not be redefined
+in a derived class.
+
+Changing the return type of an overriddden method
+You may not change the type returned by the method. One exception, if the returned type is a class type, then
+you may change the returned type to that of any descendent class of the return type. (covariant return type)
+	Example:
+		public Employee getSomeone(int someKey) // In base class
+		public HourlyEmployee getSomeone(int someKey) // In derived class
+		=> HourlyEmployee is an Employee
+
+Change the access permission of an overridden method.
+In way that make access permissions more permissive.
+
+The super Constructor
+	super(): call to the constructor for base class.
+Note: If a constructor definition for a derived class does not include an invocation of a constructor for the
+	base class, then the no-argument constructor of the base class is invoked automatically as the first action
+	of the derived class constructor.
+
+The this Constructor
+You keyword this to invoke a constructor in the same class.
+Example:
+	public HourlyEmployee()
+	{
+		this("No name", new Date("April", 1, 1000), 0, 0);
+	}
+
+	public HourlyEmployee(String theName, Date theDate, double theWageRate, double theHours)
+
+
+An object of a derived class has the type of the derived class, and it also has the type of the base class.
+More generally, a derived class has the type of every one of its ancestor classes. So, you can assign an object
+of a derived class to a variable of any ancestor type. You can plug in a derived class object for a parameter 
+of any of its ancestor type. You can use a derived class object anyplace you can use an object of any of its 
+ancestor types.
+ 
+Encapsulation and Inheritance
+An instance variable or method that is private in a base class is not accessible by name in the definition 
+of a method in any other class, not even in a method definition of a derived class.
+The instance variables name and hireDate are private instance variables in the class Employee, and although
+a derived class HourlyEmployee inherits these instance variables, it cannot access them directly. You must instead
+use public accessor and mutator methods (such as getName and setName) that were defined in the base class.
+
+
+Protected and Package Access
+protected method or instance variable can be accessed by name inside its own class definition, by name inside any class
+derived from it, and by name in the definition of any class in the same package.
+
+package access method or instance variable can be accessed by name inside the definition of any class in the same package
+but not outside of the package.
+
+
+
+Page 493
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
