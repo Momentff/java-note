@@ -2,7 +2,7 @@ Overloading
 	- Two or more methods in the same class can have the same method name.
 	Rules for overloading:
 		* Two definitions of the method name either must have different numbers
-			of parameters or some parameter position must be of differing types
+			of parameters or some parameter position must be of differing 
 			types in the two definitions. 
 
 
@@ -379,7 +379,7 @@ A sample class hierarchy:
 
 	} 
 
-The derived class ingerits all the public methods, all the public and private instance variable
+The derived class inherits all the public methods, all the public and private instance variable
 , and all the public and private static variables from the base class, and it can add more instance
 variables, more static variables, and more methods.
 
@@ -436,31 +436,386 @@ derived from it, and by name in the definition of any class in the same package.
 package access method or instance variable can be accessed by name inside the definition of any class in the same package
 but not outside of the package.
 
+Programming with Inheritance.
+
+	"is a" versus "has a":
+
+		+ The object of the derived class HourlyEmployee is also an instance of the class Employee => an HourlyEmployee
+		is an Employee. This is an example of the "is-a" relationship between class.
+
+		+ The class Employee defined earlier has an instance variable of the class type 
+		Date. => Employee "has a" Date (composition)
+
+		=> HourlyEmployee is an Employee and has a Date.
+
+Access to a Redefined Base Method.
+
+	Example: 	public String toString() //HourlyEmployee
+			{
+				return (getName() + " " + getHireDate().toString()
+					+ "\n$" + wageRate);
+			}
+			
+			public String toString() //Employee
+			{
+				return (name + " " + hireDate.toString());
+			}
+
+			public String toString()
+			{
+				return (super.toString() + "\n$" wageRate);
+
+The Class Object
+	- In Java, every class is an descendent of the class Object. So, every object of every class is of type Object, as well 
+	as being of the type of its class.
+
+The Right Way to Define equals
+	- The heading for the the method equals in the class Object:
+		+ public boolean equals(Object otherObject);
+
+	- equals method:
+		public boolean equals(Object otherObject)
+		{
+			Employee otherEmployee = (Employee) otherObject;
+			return (name.equals(otherEmployee.name) && hireDate.equals(otherEmployee.hireDate));			
+
+		}
+	- We needed to type cast the para otherObject from type Object to type Employee. If we omit the type cast
+	otherObject.name --> error because the class Object does not have an instance variable named name.
+
+	- Every object inherits the method getClass() from the class Object (final):
+		Example: o = new Employee();
+			 o.getClass() => Employee.
+			
+		if (obj1.getClass() == obj2.getClass()) // this.getClass() == obj.getClass()
+			Sys.out("Same class");
+		else
+			Sys.out("Not same");
+
+TIP: getClass versus instanceof:
+	- instanceof operator checks to see if an object is of the type given as its second argument:
+	Syntax: Object instanceof Class_Name
+	VS:
+		public boolean equals(Object otherObject) //Employee
+		{
+			if(!(otherObject instanceof Employee))
+				return false
+			else
+			{
+				Employee otherEmployee = (Employee) otherObject;
+				return (name.equals(otherEmployee.name) && hireDate.equals(otherEmployee.hireDate));			
+			}
+		}
+		
+		public boolean equals(Object otherObject)
+		{
+			if(!(otherObject instanceof HourlyEmployee))
+				return false
+			else
+			{
+				HourlyEmployee otherHourlyEmployee = (HourlyEmployee) otherObject;
+				return (super.equals(otherHourlyEmployee) && (wageRate == otherHourlyEmployee.wageRate);
+			}
 
 
-Page 493
+		}
+
+		Employee e = new Employee("Joe" , new Date("Jan", 1, 1000));
+		HourlyEmployee hourlyE = new HourlyEmployee("Joe", new Date("Jan", 1, 1000), 50.50);
+		
+
+		e.equals(hourlyE) => true
+		hourlyE.equals(e) => false //because e is an Employee but e is not an HourlyEmployee
+
+		
+		
+Chapter 8: Polymorphism and Abstract Classes
+
+Polymorphism
+	- Binding refers to the process of associating a method definition with a method invocation. If the method
+	definition is associated with the method invocation when the code is compiled, that is called early binding.
+	If the method definition is associated with the method invocation when the method is invoked (at run time),
+	that is called late binding or dynamic binding. => Java use late binding for all methods except for a few cases.
+
+	https://stackoverflow.com/questions/19017258/static-vs-dynamic-binding-in-java
+	- Early Binding: just looks at the type(what ever is before the equals so it will be seen as just a collection
+	object when in fact it is a hashSet. Dynamic Binding take into account the actual object ( what after the equal
+	so it actually recognises it is a hashSet).
+
+
+	- Polymorphism: polymorphism and late binding are essentially just different words for the same concept. Polymorphism
+	refers to the processes of assigning multiple meanings to the same method name using late binding.
+	- The final Modifier
+	If you add the modifier final to the definition of a method, it indicates that the method may not be redefined in a derived
+	class. If you add the modifier final to the definition of a class, it indicates that the class may not be used as a base class
+	to derive other classes.
+	
+Sale Records Example	
+Late Binding with toString
+
+	public void println(Object theObject)
+	{
+		System.out.println(theObject.toString());
+	}
+
+	The invocation of the method println inside the braces is a different, overloaded definition of the method println. That invocation
+	inside the braces uses a method println that has a parameter of type String, not a parameter of type Object.
+
+
+PITFALL: No Late Binding for Static methods:
+	Javas does not use late binding with prive methods. methods marked final or static methods.
+	With static binding, the decision of which definition of a method to use with a calling object is made at compile time based on the type
+	of the variable naming the object.
+	public static void announcement() { Sys.out("Sale Class"); } // Sale class
+	public static void announcement() { Sys.out("Discount Class);} //Discount Class
+	public void showAdvertisment()
+	{
+		announcement(); //in Sale class and not override in the class Discount
+	}
+	
+	If you invoke a static method within the definition of a nonstatic method but without any class name or calling object, then the calling object
+	is an implicit this, which is a calling object.
+		
+	Sale a = new Sale("Cap", 10.00);
+	DiscountSale discount = new DiscountSale("Cap", 11.00, 10);
+	a.showAdvertisment();
+	discount.showAdvertisment();
+
+	=> result
+
+	Sale class
+	Cap price and total: 10$
+	Sale class                                // instead of Discount class.
+	Cap price = 11.00 discount 10% total 9.9$
+
+	=> Compile time (based on the type of the variable holding the calling object
+
+Note 528 not understand.
+
+
+Downcasting and Upcasting
+
+	DiscountSale discount = new DiscountSale();
+	Sale aDiscount = discount;
+	aDiscount.announcement(); => static binding => type Sale => "Sale Class."
+	aDiscount.toString(); => dynamic binding => type Discount => "paint Price = $15.0 Discount = 10.0% Total cost = $13.5"
+
+Note: The type of the variable naming an object determines which method names can be used in an invocation with that calling object. However, the object itself always
+	determines the meaning of the method invocation performed by an object => late binding. The type of a class parameter determines which method names can be used 
+	with the parameter, but the argument determines which definition of the method name is used.
+
+
+	up casting: assigning an object of derived class to a variable of a base class (or any ancestor class).
+	downcasting: (more trouble) Doing a type cast from a base case to a derived class ( or from any ancestor class to any descendent class).
+
+	Example:
+		Sale sale = new Sale("paint", 15);
+		DiscountSale discount;
+		discount = (DiscountSale) sale; //error
+	does not make sense because the object named by sale has no instance variable named discount
+	and so cannot be an object of type DiscountSale. Every DiscountSale if a Sale but note every Sale
+	is a DiscountSale. => Use downcasting only in situation where it makes sense.
+
+		discount = (DiscountSale) sale; // run-time error but compile with no error
+		discount = saleVariable; //compile-time error illegal
+
+	Legal downcasting:
+		Sale otherSale = (Sale) otherObject;
+
+TIP: Checking to See Whether Downcasting Is Legitimate
+	Use instanceof operator to test whether or not downcasting is sensible.
+	Downcasting to a specific type is reasonable if the object being cast is an instance 
+	of the type, which is exactly what the instanceof operator tests for.
+ 	Syntax: Object instanceof Class_name
+	
+	Example:
+		DiscountSale ds = new DiscountSale();
+		if(someObj instanceof DiscountSale)
+		{
+			ds = (DiscountSale) someObj;
+		}
+
+clone Method
+	The clone method has no parameters and should return a copy of the calling object. (deep copy)
+	Syntax:
+		protected Object clone()
+	Example: Use the copy constructor to create the copy returned by clone method.
+		public Sale clone() //covariant return type protected => public
+		{ 
+			return new Sale(this);
+		}
+	
+PITFALL: Sometimes the clone method return type is Object
+	Prior to version 5.0, Java did not allow covariant return types => clone method will have return type of
+	Object => type cast on the value returned by clone.
+	Example:
+		OldClass copy = (OldClass) original.clone();
+	When in dount about the clone method of a class, include the type cast.
+
+
+PITFALL: Limitations of Copy Constructors
+
+	Problem:
+		public static Sale[] badCopy(Sale[] a)
+		{
+			Sale[] b = new Sale(a.length);
+			for (int i= 0; i< a.length; i++)
+				b[i] = new Sale(a[i]); //problem here
+			return b;
+		}
+	If array a contains objects from derived classes of Sale (DiscountSale), then badCopy(a) will not return a
+	true copy of a. Every element of the array badCopy(a) will be a plain old Sale, because the Sale copy constructor
+	produces only plain old Sale; no element in badCopy(a) will be an instance of the class DiscountSale.
+	
+	=> Use the method clone, things work out as they should. Because of late binding (polymorphism), a[i] always means the
+	correct version of the clone method.
+		for (int i= 0; i< a.length; i++)
+		{
+			b[i] = a[i].clone();
+		}
+	
+	The copy constructors named Sale and DiscountSale have different names, and polymorphism has nothing to do with methods
+	of different names.
+	
+Abstract class
+	Abstract class is a class that has some methods without complete definition. Cann't create an object using abstract class constructor,
+	but can use an abstract class as a base class to define a derived class.
+	
+	Example:
+		Suppose that when we define the class Employee, we might add the samePay method to the class Employee to compare employees to see
+		if they have the same pay.
+			public boolean samePay(Employee other)
+			{
+				return (this.getPay() == other.getPay());
+			}
+		Problem:
+			1. The method samePay includes an invocation of the method getPay, and the class Employee has no getPay method.
+			2. There is no reasonable definition we might give for a getPay method so that we could add it to the class Employee.
+		=> Because the Employee have no information abour pay.
+		Every real-world employee does have some pay ( belong to HourlyEmployee or SalariedEmployee), and the two derived classes each 
+		have a getPay method. The problem is that we do not know how to define the getPay method util we know if the employee is an hourly
+		or salaried. We would like to post the definition of the getPay method and give it only in each derived class of the Employee class.
+		=> abstract method:
+			public abstract double getPay();
+
+	An abstract method can be thought of as the interface part of a method with the implementation details omitted. In java abstract method cannot be
+	private because a private method is normally only a helping method and so not part of the interface for a programmer using class => it does not make
+	sense to have a private abstract method. Normally abstract method is public but protected and package (default) access is allowed.
+	
+	An abstract emthod serves as a placeholder for a method that must be defined in all (nonabstract) derived classes.
+
+	Abstract class is a class that have at least one abstract method. >< concrete class
+	
+PITFALL: Cannot create instances of an abstract class.
+
+TIP: An abstract class is a type
++ You cannot create an object of an abstract class. Nonetheless, it makes perfectly good sense to have a parameter of an abstract class type
+such as Employee. Then, an object of any of the descendent classes of Employee can be plugged in for the parameter. It even makes sense to have a variable
+of an abstract class type such as Employee, although it can only name objects of its concrete descendent classes.
+
+
+Chapter 9: Exception Handling
+
+Exception Handling Basics
+
+try-catch Mechanism:
+	When an exception is thrown, the code in the surrounding try block stops executing and another portion of code known as a catch block, begins execution.
+	The catch block has a parameter, and the exception object thrown is plugged in for this catch block parameter.
+	Example:
+		trr{
+
+		   }catch(Exception e)
+			{
+				String message = e.getMessage();
+				System.out.println(message);
+				System.exit(0);
+			}
+	catch block parameter: Each catch block can have at most one catch block parameter
+		+ Exception_Class e: Exception_Class specifies what type of thrown exception object the catch block can catch. If the name is Exception, then the
+					block can catch any exception.
+		 
+	Two possible cases of what can happen when a try block is executed:
+		1. No exeption is thrown, the code in the try block is executed to the end of the try block, the catch block is skipped, and execution continues
+			with the code placed after the catch block.
+		2. Exception is thrown, the rest of the code in the try block is skipped, and the code in the catch block is executed and then the code that follows that
+			catch block is executed.
+
+Exception Handling with the Scanner Class
+
+TIP: Exception Controlled Loops
+
+	Sometimes when an exception is thrown you might want your code to simply repeat some code so that the user can get things right on a second or subsequent try:
+		
+		boolean done = false;
+		while (!done)
+		{
+			try
+			{
+				//Code that may throw an exception in the class Exception_Class
+				done = true;		
+				//Possible more code
+			}
+			catch(Exception_Class e)
+			{
+				<Some code>
+			}
+	
+		}
+
+	Example:
+		import java.util.Scanner;
+		import java.util.InputMismatchException;
+
+		public class InputMismatchExceptionDemo
+		{
+			public static void main(String[] args)
+			{
+				Scanner keyboard = new Scanner(System.in);
+				int numer = 0;
+				boolean done = false;
+				while(!done)
+				{
+					try
+					{
+						number = keyboard.nextInt();
+						done = true;
+					}
+					catch(InputMismatchException e)
+					{
+						keyboard.nextLine();
+						System.out.println("Not a correctly written whole number");
+						Ssytem.out.println("Try again");
+					}
+							
+				}
+				System.out.println("Your number " +number); 
+			}
+
+		}
+
+Throwing Exceptions
+	Format: throw new Exception(string_describing_the_exception);
+	Example:
+		try{
+			if (a> b) throw new Exception("a cannot greater than b");
+		}
+	getMessage method: Every exception has a String instance variable that contains some message, which typically
+			identifies the reason for the exeception.
+		Example: throw new Exception(String_arg);
+			The string_args given as an argument to the constructor Exception is used as the value of this String
+			instance variable.
 
 
 
+Exception Class
+	All the exception classes in the Java libraries and the exception classes you define should have:
+		+ There is a constructor that takes a single argument of type String.
+		+ The class has an accessor method getMessage() that can recover the string given as an argument to 
+		the constructor when the exception object was created.
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Page 570
 
 
 
