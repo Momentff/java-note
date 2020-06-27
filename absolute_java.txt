@@ -815,20 +815,374 @@ Exception Class
 
 
 
-Page 570
+Exception Classes from Standard Packages
+
+Defining Exception Classes
+
+	Example:
+		public class DivisionByZeroException extends Exception
+		{
+			public DivisionByZeroException()
+			{
+				super("Division by Zero);
+			}
+			
+			public DivisionByZeroException(String message)
+			{
+				super(message);
+			}
+		}
+
+
+TIP: An Exception Class can carray a message of any type
+
+	Example:
+		public class BadNumberException extends Exception{
+			private int badNumber;
+			public BadNumberException(int number)
+			{
+				super("Bad number exception");
+				badNumber = number;
+			}		
+			
+			public BadNumberException()
+			{
+				super("Bad number exception");
+			}
+
+			public BadNumberException(String message)
+			{
+				super(message);
+			}
+			
+			public int getBadNumber()
+			{
+				return badNumber;
+			}
+		}
 
 
 
+Multiple catch Blocks
+
+PITFALL: Catch the more specific Exception First
+	When catching multiple exceptions, the order of the catch blocks can be important.
+	Example:
+		catch (Exception e)
+		{
+		...
+		}
+		catch (NegativeNumberException e)
+		{
+		...
+		}
+		=> The catch block for NegativeNumberException would never be used, because all exceptions are caught
+		by the first catch block.
+
+Throwing Exceptions in methods
+		Example:
+			public class Demo{
+				public static void main(String[] args){
+					int a = 5;
+					int b = 6;
+					try{
+						double quotient = safeDivide(a,b);
+					}catch(DivisionByZeroException e)
+					{
+						Sys.out(e.getMessage);
+					}
+						
+
+				}
+
+				public static double safeDivive(int a, int b) throws DivisionByZeroException{
+					if(b == 0)
+						throw new DivisionByZeroException("Divide by zero");
+					double quotient = a/(double) b;
+					return quotient;
+					
+				}	
+
+			}
+
+Declaring Exceptions in a throws Clause
+
+	- public void sampleMethod() throws DivisionByZeroException; 
+	=> declaring the exception. The method that might throw a DVSBZE and that
+	not catch the exception would have a heading similar to 
+
+	It warn programmer that any invocation of the method might possibly throw an exception.
+
+	If there is more than one possible exception:
+	- public void sampleMethod() throws AException, BException;
+	
+	When an exception is thrown in a method but not caught in that method, that immediatly ends the emthod invocation.
 
 
 
+Exceptions to the Catch or Declare Rule
+
+			    *Throwable
+			________|________
+			|		|		* checked exception
+		    *Exception	      Error
+			|
+		*RuntimeException
 
 
 
+	+ Exception that are descendents of the class RuntimeException do not need to be accounted for in a catch block or throws clause.
+	+ Error object: Are not required to account for Error objects in a catch block or throws clause. 
+
+
+- Exception classes that follow the Catch or Declare Rule are often called checked exceptions. Because the compiler checks to see if they
+accounted for with a catch block or throws clause.
+- Exception that are exempt from the Catch or Declare Rule are often called unchecked exceptions.
+
+throws Clause in Derived Classes:
+	When override a method definition in a derived class, it should have the same exception classes listed in its throws clause that it had
+	in the base class or it should have a throws clause whose exceptions are a subset of those in the base class throws clause.
+
+When to Use Exceptions
+	In most case, you should include any throw statement within a method definition, list the exception class in a throws clause for that method
+	and place the try catch blocks in a different method.
+
+Note: Exceptions should be reserved for situations where a method has an exceptional case
+and individual invocations of the method would handle the exceptional case differently. 
+
+
+Event-Driven Programming
+	- Exception is a example of a programming methodology known as event-driven programming. With event-driven programming, objects are defined
+	so that they send events, which are themselves objects, to other objects that handle the event. Sending the event is called firing the event.
+
+	- In exception handling, the event objects are the exception objects. They are fired (thrown) by an object when the object invokes a method 
+	that throws the exception. An exception event is sent to a catch block, where it is handled.
+
+More Programming Techniques for Exception Handling.
+
+PITFALL: Nested try-catch Blocks
+	- You can place a try-catch inside a larger try block or inside a larger catch block. But it is almost always better to place the inner try catch
+	blocks inside a method definition and place an invocation of the method in outer try or catch block.
+	- If place try-catch block inside a larger catch block, you will need to use different names for for the catch block parameter in the inner and outter
+	blocks.
+	- If you place a try-catch block inside a larger try block, and an exception is thrown in the inner try block but it not caught in the inner catch blocks
+	then the exception is thrown to the outer try block for processing and might be caught in one of its catch blocks.
+
+
+The finally Block
+	- Contains code to be executed whether or not an exception is thrown in a try block.
+	Syntax:
+		try{}
+		catch (Exception a){}
+		catch (Exception b){}
+		finally{}
+	- There are three possibilities:
+		+ No exception is thrown: try{} --> finally{}
+		+ Exception is thrown and is caught in the catch block: try{} --> catch{} --> finally{}
+		+ Exception is thrown and there is no matching catch: try{} --> finally{} --> method end. 
+Rethowing an Exception:
+	- A catch block can contain code that throws an exception. In some case, depending on the string produced by getMessage() or sth else, decide to throw the same
+	or a different exception for handing further up the chain of exception handling blocks.
+
+The AssertionError Class
+	- assert operator: if your program contains an assertion check and the assertion check failts, your program will end will an error message. The object of the class
+	AssertionError is thrown. if it is not caught in a catch block, your program ends with an error message.
+
+ArrayIndexOutOfBoundsException
+	AIOOBE is a descendent of the class RuntimeException and so need not be caught or accounted for in a throws clause.
 
 
 
+Chapter 10: File I/O
+
+Streams
+	- A streams is a flow of data. If the date flows into your programs, then the stream is called an input stream. If the data flows out of your program, the stream is called
+	an output stream.
+
+Text Files
+	- Writing to a Text File: The class PrintWriter is the preferred stream class for writing to a text file.
+	- All the file I/O-related classes are in the package java.io.
+	Example:
+		outputStream = new PrintWriter(new FileOutputStream("stuff.txt")); //connect the stream named outputStream to the file named stuff.txt (opening the file)
+	Note: The class PrintWriter has no constructor that takes a file name as its argument => Use class FileOutputStream to create a stream that can be used as an argument
+		to a PrintWriter constructor.
+
+		
+	Example: Sending Output to a Text File
+	/*
+		import java.io.PrintWritter;
+		import java.io.FileOutputStream;
+		import java.io.FileNotFoundException;
+
+		public class TextFileOutputDemo{
+			public static void main(String[] args){
+				PrintWriter outputStream = null // define outside of the try block so that this var can be used outside of the try block.
+				try{
+					outputStream = new PrintWriter(new FileOutputStream("stuff.txt")); // only place that an exception might be thrown.
+				}
+				catch(FileNotFoundException e)
+				{
+					System.out.println("Error opening the stuff.txt file");
+					System.exit(0);	
+				}
+				//write to file
+				outputStream.println("The quick brown fox");
+				outputStream.println("jumps over the lazy dog");
+				outputStram.close();
+			}
+
+		}
+		
+	- A File has two names: (1) the real file name that is used by the operating system and (2) the name of the stream that is connected to the file.
+				The stream nam serves as a temporary name for the file and is the name that is primarily used within your program.
+
+	Note: A FileNotFoundException does not mean that the file was not found. In this case, it actually means that the file could not be created (for example, because
+		the file name is already used for a directory (folder) name.
+	
+Some methods of the class PrintWriter
+
+	- public PrintWriter (OutputStream streamObject)
+		- Use file name: new PrintWriter(new FileOutputStream(File_Name));
+		=> A blank file is create. If there already is a file named File_Name, then the old contents of the file are lost. 
+		If you want instead to append new text to the end of the old file content:
+			+ new PrintWriter(new FileOutputStream(File_Name, true));
+		* When used in  either of these ways, the FileOutputStream constructor, and so the PrintWriter constructor invocation, can throw a FileNotFoundException.
+
+	- public void println(Argument);
+		- Argument can be string, integer ...boolean or any combination of these, connectd with + signs. The Arg can also be any object, although it not work as desired
+		unless the object has a properly defined toString() method.
+
+	- public void print(Argument);
+		- This is the same as println, except that this method does not end the line, so the next output will be on the same line.
+
+	- public PrintWriter printf(Argument);
+		- Sends output to the text file. It return the calling object. However, we have always used printf as a void method.
+
+	- public void close();
+		- Close the stream's connection to the file. The following method calls flush before closing the file:
+	
+	- public void flush();
+		- Flush the output stream. This forces an actual physical write to the file ofany data that has been buffered and not yet physically written to the file. Normally, you should
+		not need to invoke flush.
+
+You should close the close files with an explicit call to the method close. Because:
+	1. If your program ends abnormally, then Java may not be able to close the file for you. This could damage the file. If it is an output file, any buffered output will not have been
+	physically written to the file. So, the file will be incomplete. The sooner you close a file, the less likely it is that this will happen.
+	2. If your program writes to a file and later reads from the same file, it must close the file after it is through writting to the file and then reopen the file for reading.
+
+PITFALL: Overwriting an output file
+	+ PrintWriter outputStream = new PrintWriter(new FileOutputStream("stuff.txt"));
+	Note: If there is no file named stuff.txt, this will create an empty file named stuff.txt. If a file named stuff.txt already exists, then this will eliminate that file and create a new, empty
+	file named stuff.txt. So if there is a file named stuff.txt before this file opening, then all the data in that file will be lost.
+
+Appending to a Text File
+	+ PrintWriter outputStream = new PrintWriter(new FileOutputStream("stuff.txt", true);
+	Note: If the file stuff.txt is not exist, Java will create an empty file and append the output to the end of this empty file. However, if the file stuff.txt already exists, then the old contents will
+	remain, and the program's output will be placed after the old contents of the file. (try-catch block);
+
+TIP: toString helps with text file output
+Both print and println of the class PrintWriter can take any object as an argument and will produce reasonable output so long as the object has a sensible toString() method.
+
+Reading from a Text File
+
+Reading a text file using Scanner
+	Example: Create a stream of the class Scanner and connect it to a text file for reading
+		Scanner inputStream = null;
+		inpurStream = new Scanner(new FileInputStream("stuff.txt"));
+	After this statement, you can use the methods nextInt, nextLine, and so forth to read from the named text files.
+	When used in this way, the FileInputStream constructor, and hence the Scanner constructor invocation, can throw a FileNotFoundException.
 
 
+	Example:
+		Scanner inputStream = null;
+		try
+		{
+			inputStream = new Scanner(new FileOutputStream("stuff.txt"));
+		}
+		catch(FileNotFoundException e)
+		{
+			Sys.out("File not found");
+			Sys.exit()
+		}
+		int n1 = inputStream.nextInt();
+		int n2 = inputStream.nextInt();
+		int n3 = inputStream.nextInt();
+		
+		inputStream.nextLine();
+		
+		String line = inputStream.nextLine();
 
+		Sys.out(n1 + ", " + n2 +" and " +n3);
+		Sys.out("Line: " + line);	// to go to the next line
+
+		inputStream.close();
+		
+		stuff.txt			Program output
+		_________________________________________________
+		-----------------	
+		|1 2		|       => 	1,2 and 3
+		|3 4		|		Line: Eat my shorts.
+		|Eat my shorts.	|
+		-----------------
+
+Testing for the End of a text file with Scanner
+
+	- You can use the method like nextInt or nextLine that throws NoSuchElementException when the input is not a correctly formed to check the end of input.
+	However, each of the input methods has corresponding method (such hasNextInt) that checks to see if there is any more wekk-formed input of the appropriate
+	type. The nice thing about these method is that they report when there is not a suitable next token for any reason; they do not check only for the end of a file
+	
+
+Note:	-----------------
+	|File data.txt	|	
+	|1 2		|
+	|3 4 hi 5	|--> Reading ends when either the end of the file is reached or a token that is not an int is reached. So, the 5 is never reached.
+	-----------------
+	int next, sum = 0;
+	while (inputStream.hasNextInt())
+	{
+		next = inputStream.nextInt();
+		sum = sum + next;
+	}
+	inputStream.close();
+	Sys.out("Sum = " +sum); ==> Output: Sum = 10;
+
+
+Some of the methods in the Scanner class:
+	- public Scanner(InputStream streamObject)
+	- new Scanner(new FileInputStream(File_name))
+	- public Scanner(File fileObject)
+		+ If you want to create a stream using a file name, you can use:
+			new Scanner(new File(File_name))
+	- public int nextInt(): return a next token as an int, provided the next token is a well-formaed string representation of an int.
+		+ Throws a NoSuchElementException if there are no more tokens.
+		+ Throws an InputMismatchException if the next token is not well-formed string representation of an int.
+		+ Throw an IllegalStateException if the Scanner stream is closed.
+	- public boolean hasNextInt(): return true if the next token is a well-formed string representation of an int; otherwise returns false.
+		+ Throw an IllegalStateException if the Scanner stream is closed.
+
+	- public long nextLong();
+	- public boolean hasNextLong();
+	- public byte nextByte();
+	- public boolean hasNextByte();
+	- public short nextShort();
+	- public boolean hasNextShort();
+	- public double nextDouble();
+	- public boolean hasNextDouble();
+	- public float nextByte();
+	- public boolean hasNextFloat();
+
+	- public String next(); Return the next token.
+	- public boolean hasNext(); Return true if there is another token. May wait for a next token to enter the stream.
+
+	- public String nextLine(); Returns the rest of the current line. Note that the line terminator '\n' is read and discarded.
+	- public boolean hasNextLine(); Return true if there is another token. May wait for a next line to enter the stream.
+
+	- public Scanner useDelimiter(String newDelimiter); Changes the delimiter for input so that newDelimiter will be the only delimiter that
+	seperates words or number. Returns the calling object, but we have always used it as a void method.
+
+
+Unchecked Exceptions:
+	NoSuchElementException, InputMismatchException, IllegalStateException are all unchecked exceptions.
+
+Page 635;
 
